@@ -7,8 +7,11 @@
 
 import SpriteKit
 import GameplayKit
+import CoreMotion
 
 class GameScene: SKScene {
+    // Height at which level ends
+    var endLevelY = 0
     
     // Layered Nodes
     var backgroundNode: SKNode!
@@ -24,6 +27,12 @@ class GameScene: SKScene {
     
     // Tap To Start node
     let tapToStartNode = SKSpriteNode(imageNamed: "TapToStart")
+    
+    // Motion manager for accelerometer
+    let motionManager = CMMotionManager()
+        
+    // Acceleration value from accelerometer
+    var xAcceleration: CGFloat = 0.0
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -51,17 +60,67 @@ class GameScene: SKScene {
         backgroundNode = createBackgroundNode()
         addChild(backgroundNode)
         
+        // Midground
+        midgroundNode = createMidgroundNode()
+        addChild(midgroundNode)
+
+        
         // Foreground
         foregroundNode = SKNode()
         addChild(foregroundNode)
         
-        // Add a platform
-        let platform = createPlatformAtPosition(position: CGPoint(x: 160, y: 320), ofType: .normal)
-        foregroundNode.addChild(platform)
+        // Load the level
+        let levelPlist = Bundle.main.path(forResource: "Level01", ofType: "plist")
+        let levelData = NSDictionary(contentsOfFile: levelPlist!)!
+                
+        // Height at which the player ends the level
+        endLevelY = (levelData["EndY"]! as AnyObject).integerValue!
         
-        // Add a star
-        let star = createStarAtPosition(position: CGPoint(x: 160, y: 220), ofType: .special)
-        foregroundNode.addChild(star)
+        // Add the platforms
+        let platforms = levelData["Platforms"] as! NSDictionary
+        let platformPatterns = platforms["Patterns"] as! NSDictionary
+        let platformPositions = platforms["Positions"] as! [NSDictionary]
+        
+        for platformPosition in platformPositions {
+            let patternX = (platformPosition["x"] as AnyObject).floatValue
+            let patternY = (platformPosition["y"] as AnyObject).floatValue
+            let pattern = platformPosition["pattern"] as! NSString
+            
+            // Look up the pattern
+            let platformPattern = platformPatterns[pattern] as! [NSDictionary]
+            for platformPoint in platformPattern {
+                let x = (platformPoint["x"] as AnyObject).floatValue
+                let y = (platformPoint["y"] as AnyObject).floatValue
+                let type = PlatformType(rawValue: (platformPoint["type"]! as AnyObject).integerValue)
+                let positionX = CGFloat(x! + patternX!)
+                let positionY = CGFloat(y! + patternY!)
+                let platformNode = createPlatformAtPosition(position: CGPoint(x: positionX, y: positionY), ofType: type!)
+                foregroundNode.addChild(platformNode)
+            }
+        }
+        
+        // Add the stars
+        let stars = levelData["Stars"] as! NSDictionary
+        let starPatterns = stars["Patterns"] as! NSDictionary
+        let starPositions = stars["Positions"] as! [NSDictionary]
+        
+        for starPosition in starPositions {
+            let patternX = (starPosition["x"] as AnyObject).floatValue
+            let patternY = (starPosition["y"] as AnyObject).floatValue
+            let pattern = starPosition["pattern"] as! NSString
+            
+            // Look up the pattern
+            let starPattern = starPatterns[pattern] as! [NSDictionary]
+            for starPoint in starPattern {
+                let x = (starPoint["x"] as AnyObject).floatValue
+                let y = (starPoint["y"] as AnyObject).floatValue
+                let type = StarType(rawValue: (starPoint["type"]! as AnyObject).integerValue)
+                let positionX = CGFloat(x! + patternX!)
+                let positionY = CGFloat(y! + patternY!)
+                let starNode = createStarAtPosition(position: CGPoint(x: positionX, y: positionY), ofType: type!)
+                foregroundNode.addChild(starNode)
+            }
+        }
         
         
         // Add the player
@@ -72,6 +131,20 @@ class GameScene: SKScene {
         tapToStartNode.position = CGPoint(x: self.size.width / 2, y: 180.0)
         tapToStartNode.zPosition = 1
         hudNode.addChild(tapToStartNode)
+        
+        // CoreMotion
+        // 1
+        motionManager.accelerometerUpdateInterval = 0.2
+        // 2
+        motionManager.startAccelerometerUpdates(to: OperationQueue.current!, withHandler: {
+          (accelerometerData, error) in
+          // 3
+            let acceleration = accelerometerData!.acceleration
+          // 4
+          self.xAcceleration = (CGFloat(acceleration.x) * 0.75) + (self.xAcceleration * 0.25)
+        })
+
+
         
     }
     
@@ -99,6 +172,38 @@ class GameScene: SKScene {
         // 6
         // Return the completed background node
         return backgroundNode
+    }
+    
+    func createMidgroundNode() -> SKNode {
+        // Create the node
+        let theMidgroundNode = SKNode()
+        var anchor: CGPoint!
+        var xPosition: CGFloat!
+        
+        // 1
+        // Add some branches to the midground
+        for index in 0...9 {
+            var spriteName: String
+            // 2
+            let r = arc4random() % 2
+            if r > 0 {
+                spriteName = "BranchRight"
+                anchor = CGPoint(x: 1.0, y: 0.5)
+                xPosition = self.size.width
+            } else {
+                spriteName = "BranchLeft"
+                anchor = CGPoint(x: 0.0, y: 0.5)
+                xPosition = 0.0
+            }
+            // 3
+            let branchNode = SKSpriteNode(imageNamed: spriteName)
+            branchNode.anchorPoint = anchor
+            branchNode.position = CGPoint(x: xPosition, y: 500.0 * CGFloat(index))
+            theMidgroundNode.addChild(branchNode)
+        }
+        
+        // Return the completed midground node
+        return theMidgroundNode
     }
     
     func createPlayer() -> SKNode {
@@ -223,6 +328,28 @@ extension GameScene: SKPhysicsContactDelegate {
         // Update the HUD if necessary
         if updateHUD {
             // 4 TODO: Update HUD in Part 2
+        }
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        // Calculate player y offset
+        if player.position.y > 200.0 {
+            backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/10))
+            midgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/4))
+            foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
+        }
+    }
+    
+    override func didSimulatePhysics() {
+        // 1
+        // Set velocity based on x-axis acceleration
+        player.physicsBody?.velocity = CGVector(dx: xAcceleration * 400.0, dy: player.physicsBody!.velocity.dy)
+        // 2
+        // Check x bounds
+        if player.position.x < -20.0 {
+            player.position = CGPoint(x: self.size.width + 20.0, y: player.position.y)
+        } else if (player.position.x > self.size.width + 20.0) {
+            player.position = CGPoint(x: -20.0, y: player.position.y)
         }
     }
 }

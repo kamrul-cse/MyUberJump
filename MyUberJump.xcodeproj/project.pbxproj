@@ -57,6 +57,7 @@
 		11E33D82257F86D500B01DD1 /* Background01@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 11E33D57257F86D400B01DD1 /* Background01@2x.png */; };
 		11E33D85257F94B500B01DD1 /* GameObjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E33D84257F94B500B01DD1 /* GameObjectNode.swift */; };
 		11E33D89257FC3AF00B01DD1 /* StarPing.wav in Resources */ = {isa = PBXBuildFile; fileRef = 11E33D88257FC3AF00B01DD1 /* StarPing.wav */; };
+		11E33D8C257FD63A00B01DD1 /* Level01.plist in Resources */ = {isa = PBXBuildFile; fileRef = 11E33D8B257FD63A00B01DD1 /* Level01.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -112,6 +113,7 @@
 		11E33D57257F86D400B01DD1 /* Background01@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Background01@2x.png"; sourceTree = "<group>"; };
 		11E33D84257F94B500B01DD1 /* GameObjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameObjectNode.swift; sourceTree = "<group>"; };
 		11E33D88257FC3AF00B01DD1 /* StarPing.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = StarPing.wav; sourceTree = "<group>"; };
+		11E33D8B257FD63A00B01DD1 /* Level01.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Level01.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +212,7 @@
 		11E33D87257FC3AF00B01DD1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				11E33D8B257FD63A00B01DD1 /* Level01.plist */,
 				11E33D88257FC3AF00B01DD1 /* StarPing.wav */,
 			);
 			path = Resources;
@@ -312,6 +315,7 @@
 				11E33D58257F86D400B01DD1 /* Assets.atlas in Resources */,
 				11E33D66257F86D500B01DD1 /* Background13.png in Resources */,
 				11E33D7C257F86D500B01DD1 /* Background19@2x.png in Resources */,
+				11E33D8C257FD63A00B01DD1 /* Level01.plist in Resources */,
 				11E33D68257F86D500B01DD1 /* Background06.png in Resources */,
 				11E33D60257F86D500B01DD1 /* Background04.png in Resources */,
 				11E33D69257F86D500B01DD1 /* Background12.png in Resources */,
