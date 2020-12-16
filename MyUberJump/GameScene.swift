@@ -41,6 +41,8 @@ class GameScene: SKScene {
     // Max y reached by player
     var maxPlayerY: Int!
     
+    // Game over dude!
+    var gameOver = false
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -52,6 +54,8 @@ class GameScene: SKScene {
         
         // Reset
         maxPlayerY = 80
+        GameState.sharedInstance.score = 0
+        gameOver = false
         
         setupUI()
     }
@@ -361,6 +365,19 @@ class GameScene: SKScene {
         return node
     }
     
+    func endGame() {
+        // 1
+        gameOver = true
+        
+        // 2
+        // Save stars and high score
+        GameState.sharedInstance.saveState()
+        
+        // 3
+        let reveal = SKTransition.fade(withDuration: 0.5)
+        let endGameScene = EndGameScene(size: self.size)
+        self.view!.presentScene(endGameScene, transition: reveal)
+    }
 }
 
 extension GameScene: SKPhysicsContactDelegate {
@@ -383,6 +400,10 @@ extension GameScene: SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        if gameOver {
+          return
+        }
+        
         // New max height ?
         // 1
         if Int(player.position.y) > maxPlayerY! {
@@ -412,6 +433,18 @@ extension GameScene: SKPhysicsContactDelegate {
             backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/10))
             midgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/4))
             foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
+        }
+        
+        // 1
+        // Check if we've finished the level
+        if Int(player.position.y) > endLevelY {
+          endGame()
+        }
+                
+        // 2
+        // Check if we've fallen too far
+        if Int(player.position.y) < maxPlayerY - 800 {
+          endGame()
         }
     }
     
