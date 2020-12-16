@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		11345CD3258A34480051BB07 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11345CD2258A34480051BB07 /* GameState.swift */; };
 		11E33D16257F6B4C00B01DD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E33D15257F6B4C00B01DD1 /* AppDelegate.swift */; };
 		11E33D1C257F6B4C00B01DD1 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E33D1B257F6B4C00B01DD1 /* GameScene.swift */; };
 		11E33D1E257F6B4C00B01DD1 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E33D1D257F6B4C00B01DD1 /* GameViewController.swift */; };
@@ -61,6 +62,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		11345CD2258A34480051BB07 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		11E33D12257F6B4C00B01DD1 /* MyUberJump.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyUberJump.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11E33D15257F6B4C00B01DD1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		11E33D1B257F6B4C00B01DD1 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				11E33D1B257F6B4C00B01DD1 /* GameScene.swift */,
 				11E33D84257F94B500B01DD1 /* GameObjectNode.swift */,
 				11E33D1D257F6B4C00B01DD1 /* GameViewController.swift */,
+				11345CD2258A34480051BB07 /* GameState.swift */,
 				11E33D1F257F6B4C00B01DD1 /* Main.storyboard */,
 				11E33D22257F6B4D00B01DD1 /* Assets.xcassets */,
 				11E33D24257F6B4D00B01DD1 /* Info.plist */,
@@ -334,6 +337,7 @@
 			files = (
 				11E33D1C257F6B4C00B01DD1 /* GameScene.swift in Sources */,
 				11E33D1E257F6B4C00B01DD1 /* GameViewController.swift in Sources */,
+				11345CD3258A34480051BB07 /* GameState.swift in Sources */,
 				11E33D85257F94B500B01DD1 /* GameObjectNode.swift in Sources */,
 				11E33D16257F6B4C00B01DD1 /* AppDelegate.swift in Sources */,
 			);
@@ -477,6 +481,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = VXU75L53UG;
 				INFOPLIST_FILE = MyUberJump/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -496,6 +501,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = VXU75L53UG;
 				INFOPLIST_FILE = MyUberJump/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

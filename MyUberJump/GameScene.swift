@@ -34,6 +34,13 @@ class GameScene: SKScene {
     // Acceleration value from accelerometer
     var xAcceleration: CGFloat = 0.0
     
+    // Labels for score and stars
+    var lblScore: SKLabelNode!
+    var lblStars: SKLabelNode!
+    
+    // Max y reached by player
+    var maxPlayerY: Int!
+    
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -42,6 +49,14 @@ class GameScene: SKScene {
     override init(size: CGSize) {
         super.init(size: size)
         backgroundColor = SKColor.white
+        
+        // Reset
+        maxPlayerY = 80
+        
+        setupUI()
+    }
+    
+    func setupUI() {
         // Add some gravity
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
         
@@ -132,6 +147,8 @@ class GameScene: SKScene {
         tapToStartNode.zPosition = 1
         hudNode.addChild(tapToStartNode)
         
+        buildTheHud()
+        
         // CoreMotion
         // 1
         motionManager.accelerometerUpdateInterval = 0.2
@@ -143,9 +160,6 @@ class GameScene: SKScene {
           // 4
           self.xAcceleration = (CGFloat(acceleration.x) * 0.75) + (self.xAcceleration * 0.25)
         })
-
-
-        
     }
     
     func createBackgroundNode() -> SKNode {
@@ -237,6 +251,42 @@ class GameScene: SKScene {
         return playerNode
     }
     
+    func buildTheHud() {
+        // Build the HUD
+                
+        // Stars
+        // 1
+        let star = SKSpriteNode(imageNamed: "Star")
+        star.position = CGPoint(x: 25, y: self.size.height-30)
+        star.zPosition = 1
+        hudNode.addChild(star)
+                
+        // 2
+        lblStars = SKLabelNode(fontNamed: "ChalkboardSE-Bold")
+        lblStars.fontSize = 30
+        lblStars.fontColor = SKColor.white
+        lblStars.position = CGPoint(x: 50, y: self.size.height-40)
+        lblStars.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+                
+        // 3
+        lblStars.text = String(format: "X %d", GameState.sharedInstance.stars)
+        lblStars.zPosition = 1
+        hudNode.addChild(lblStars)
+                
+        // Score
+        // 4
+        lblScore = SKLabelNode(fontNamed: "ChalkboardSE-Bold")
+        lblScore.fontSize = 30
+        lblScore.fontColor = SKColor.white
+        lblScore.position = CGPoint(x: self.size.width-20, y: self.size.height-40)
+        lblScore.zPosition = 1
+        lblScore.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
+                
+        // 5
+        lblScore.text = "0"
+        hudNode.addChild(lblScore)
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // 1
         // If we're already playing, ignore touches
@@ -316,7 +366,7 @@ class GameScene: SKScene {
 extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         // 1
-        var updateHUD = false
+        var updateHUD = true
         
         // 2
         let whichNode = (contact.bodyA.node != player) ? contact.bodyA.node : contact.bodyB.node
@@ -327,11 +377,36 @@ extension GameScene: SKPhysicsContactDelegate {
         
         // Update the HUD if necessary
         if updateHUD {
-            // 4 TODO: Update HUD in Part 2
+            lblStars.text = String(format: "X %d", GameState.sharedInstance.stars)
+            lblScore.text = String(format: "%d", GameState.sharedInstance.score)
         }
     }
     
     override func update(_ currentTime: TimeInterval) {
+        // New max height ?
+        // 1
+        if Int(player.position.y) > maxPlayerY! {
+          // 2
+          GameState.sharedInstance.score += Int(player.position.y) - maxPlayerY!
+          // 3
+          maxPlayerY = Int(player.position.y)
+          // 4
+          lblScore.text = String(format: "%d", GameState.sharedInstance.score)
+        }
+        
+        // Remove game objects that have passed by
+        foregroundNode.enumerateChildNodes(withName: "NODE_PLATFORM", using: {
+            (node, stop) in
+            let platform = node as! PlatformNode
+            platform.checkNodeRemoval(playerY: self.player.position.y)
+        })
+        
+        foregroundNode.enumerateChildNodes(withName: "NODE_STAR", using: {
+            (node, stop) in
+            let star = node as! StarNode
+            star.checkNodeRemoval(playerY: self.player.position.y)
+        })
+        
         // Calculate player y offset
         if player.position.y > 200.0 {
             backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/10))

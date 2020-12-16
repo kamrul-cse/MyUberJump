@@ -51,6 +51,12 @@ class StarNode: GameObjectNode {
             self.removeFromParent()
         })
         
+        // Award score
+        GameState.sharedInstance.score += (starType == .normal ? 20 : 100)
+        
+        // Award stars
+        GameState.sharedInstance.stars += (starType == .normal ? 1 : 5)
+        
         // The HUD needs updating to show the new stars and score
         return true
     }
